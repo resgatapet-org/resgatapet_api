@@ -11,9 +11,7 @@ export class AdocaoBusiness {
   private animalData = new AnimalData();
   private userData = new UserData();
 
-  public async getAllAdocoes(
-    filter: AdocaoFilterDTO
-  ): Promise<PaginatedResponse<Adocao>> {
+  public async getAllAdocoes(filter: AdocaoFilterDTO): Promise<PaginatedResponse<Adocao>> {
     try {
       const completeFilter = FilterUtilsAdocao.applyDefaults(filter);
       const adocoes = await this.adocaoData.getAllAdocoes(completeFilter);
@@ -61,10 +59,7 @@ export class AdocaoBusiness {
     }
   }
 
-  public async updateAdocaoStatus(
-    id_adocao: number,
-    status: string
-  ): Promise<void> {
+  public async updateAdocaoStatus(id_adocao: number, status: string): Promise<void> {
     try {
       const adocao = await this.adocaoData.getAdocaoById(id_adocao);
       if (!adocao) {
@@ -77,6 +72,13 @@ export class AdocaoBusiness {
       }
 
       await this.adocaoData.updateAdocaoStatus(id_adocao, status);
+
+      if (status === 'aprovado' && adocao.animal_id) {
+        const animal = await this.animalData.getAnimalById(adocao.animal_id); //animal só pode ser adotado se não já estar'adotado'
+        if (animal && animal.status !== 'adotado') {
+          await this.animalData.updateAnimal(adocao.animal_id, { status: 'adotado' }); //muda o status do animal para 'adotado' na tabela animal
+        }
+      }
     } catch (error: any) {
       throw new Error(error.message);
     }
