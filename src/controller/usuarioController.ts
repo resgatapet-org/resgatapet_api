@@ -102,9 +102,9 @@ export class UserController {
 
 
     public update = async (req: Request, res: Response) => {
+        const errorUtils = new ErrorUtils();
         try {
             const id = req.params.id;
-
 
             if (!id || isNaN(Number(id))) {
                 return res.status(400).json({
@@ -115,18 +115,20 @@ export class UserController {
             const idNumber = Number(id);
             const { nome, email, senha, tipo } = req.body;
 
-
-            if (!nome || !email || !senha || !tipo) {
-                return res.status(400).json({
-                    error: "Todos os campos são obrigatórios para atualização",
-                });
+            if (!nome) errorUtils.addError("O nome do usuário é obrigatório.");
+            if (!email) errorUtils.addError("O email é obrigatório.");
+            if (!senha) errorUtils.addError("A senha é obrigatória.");
+            if (!tipo || !["COMUM", "ONG", "ADMIN"].includes(tipo.toUpperCase())) {
+                errorUtils.addError("O tipo de usuário deve ser COMUM, ONG ou ADMIN.");
             }
+
+            errorUtils.throwIfHasErrors("Dados de atualização inválidos");
 
             await this.userBusiness.updateUser(idNumber, {
                 nome,
                 email,
                 senha,
-                tipo,
+                tipo: tipo.toUpperCase(),
             });
 
             const updatedUser = await this.userBusiness.getUserById(idNumber);
@@ -152,6 +154,15 @@ export class UserController {
                     success: false,
                     message: error.message,
                     errors: [error.message],
+                });
+            }
+
+            if (error.message.includes("Dados de atualização inválidos")) {
+                const errorDetails = error.message.split(": ")[1];
+                return res.status(400).send({
+                    success: false,
+                    message: "Erro de validação",
+                    errors: errorDetails ? errorDetails.split("|").filter((e: string) => e.trim().length > 0) : [error.message]
                 });
             }
 

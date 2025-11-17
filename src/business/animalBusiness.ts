@@ -1,12 +1,14 @@
 import { AnimalData } from "../data/animalData";
-import { AdocaoData } from "../data/adocaoData";
 import { Animal } from "../types/animal";
 import { PaginatedResponse } from "../dto/paginationDto";
 import { AnimalFilterDTO } from "../dto/animalFilterDto";
 import { FilterUtilsAnimal } from "../utils/filterUtilsAnimal";
+import { PrioridadeBusiness } from "./prioridadesBusiness";
 
 export class AnimalBusiness {
   private animalData = new AnimalData();
+
+  private prioridadeBusiness = new PrioridadeBusiness();
 
   public async getAllAnimals(filter: AnimalFilterDTO): Promise<PaginatedResponse<Animal>> {
     try {
@@ -27,9 +29,7 @@ export class AnimalBusiness {
     }
   }
 
-  public async createAnimal(
-    input: Omit<Animal, "id_animal" | "data_registro">
-  ): Promise<Animal> {
+  public async createAnimal(input: Omit<Animal, "id_animal" | "data_registro">): Promise<Animal> {
     try {
       if (!input.nome || !input.especie || !input.status || !input.ong_id) {
         throw new Error("Campos obrigatórios ausentes: nome, especie, status, ong_id.");
@@ -72,20 +72,19 @@ export class AnimalBusiness {
     }
   }
 
-  public async setPrioridade(
-    id_animal: number,
-    nivel: string,
-    descricao: string
-  ): Promise<void> {
+  public async setPrioridade(id_animal: number, nivel: string, descricao: string): Promise<void> {
     try {
       const animal = await this.animalData.getAnimalById(id_animal);
       if (!animal) {
         throw new Error("Animal não encontrado.");
       }
 
-      throw new Error(
-        "A prioridade deve ser definida usando o endpoint de Prioridade. Use o endpoint POST /prioridades com o animal_id."
-      );
+      await this.prioridadeBusiness.createPrioridade({
+        animal_id: id_animal,
+        nivel,
+        descricao
+      });
+
     } catch (error: any) {
       throw new Error(error.message);
     }

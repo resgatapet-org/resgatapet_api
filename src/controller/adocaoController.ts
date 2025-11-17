@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { AdocaoBusiness } from "../business/adocaoBusiness";
-import { FilterUtilsAdocao } from '../utils/filterUtilsAdocao'; 
+import { FilterUtilsAdocao } from '../utils/filterUtilsAdocao';
 import { ErrorUtils } from '../utils/ErrorUtils';
 import { ApiResponse } from '../types/ApiResponse';
 
@@ -10,9 +10,9 @@ export class AdocaoController {
     public getAll = async (req: Request, res: Response) => {
         try {
             const filter = FilterUtilsAdocao.applyDefaults(req.query);
-            
+
             const adocoes = await this.adocaoBusiness.getAllAdocoes(filter);
-            
+
             res.status(200).send(adocoes);
         } catch (error: any) {
             res.status(500).send({ error: error.message });
@@ -35,19 +35,27 @@ export class AdocaoController {
                 return res.status(404).json({ error: 'Adoção não encontrada' });
             }
 
-            res.status(200).send(adocao); 
+            res.status(200).send(adocao);
         } catch (error: any) {
             res.status(500).send({ error: error.message });
         }
     }
 
     public create = async (req: Request, res: Response) => {
+        const errorUtils = new ErrorUtils();
         try {
             const { animal_id, usuario_id, ong_id, status } = req.body;
 
+            // Validações explícitas
+            if (!animal_id || isNaN(Number(animal_id))) errorUtils.addError("O ID do animal é obrigatório e deve ser um número.");
+            if (!usuario_id || isNaN(Number(usuario_id))) errorUtils.addError("O ID do usuário é obrigatório e deve ser um número.");
+            if (!status) errorUtils.addError("O status da solicitação é obrigatório.");
+
+            errorUtils.throwIfHasErrors("Dados de criação inválidos");
+
             await this.adocaoBusiness.createAdocao({
-                animal_id,
-                usuario_id,
+                animal_id: Number(animal_id),
+                usuario_id: Number(usuario_id),
                 ong_id,
                 status,
                 data_solicitacao: new Date(),
@@ -55,6 +63,9 @@ export class AdocaoController {
 
             res.status(201).send({ message: "Solicitação de adoção registrada com sucesso!" });
         } catch (error: any) {
+            if (error.message.includes("Dados de criação inválidos")) {
+                return res.status(400).send({ success: false, message: "Erro de validação", errors: [error.message] });
+            }
             res.status(400).send({ error: error.message });
         }
     };
@@ -68,10 +79,10 @@ export class AdocaoController {
                 return res.status(400).json({ error: 'ID da adoção é obrigatório e deve ser um número' });
             }
             if (!status) errorUtils.addError('O novo status é obrigatório.');
-            errorUtils.throwIfHasErrors("Dados de atualização inválidos"); 
+            errorUtils.throwIfHasErrors("Dados de atualização inválidos");
 
             const idNumber = Number(id);
-            
+
             await this.adocaoBusiness.updateAdocaoStatus(idNumber, status);
 
             const response: ApiResponse<null> = {
@@ -102,7 +113,7 @@ export class AdocaoController {
             const idNumber = Number(id);
             await this.adocaoBusiness.deleteAdocao(idNumber);
 
-            res.status(204).send(); 
+            res.status(204).send();
         } catch (error: any) {
             if (error.message.includes("não encontrada")) {
                 return res.status(404).send({ success: false, message: error.message, errors: [error.message] });

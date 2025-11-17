@@ -13,7 +13,7 @@ export class DoacaoController {
             // Prioriza o ong_id do params sobre o do query
             const ongIdFromParams = req.params.id ? Number(req.params.id) : undefined;
             
-            //garanti que o ong_id do params sobrescreva o do query
+            //garante que o ong_id do params sobrescreva o do query
             const rawFilter = { 
                 ...req.query,
                 ong_id: ongIdFromParams || req.query.ong_id, // Se veio do params, usa ele.

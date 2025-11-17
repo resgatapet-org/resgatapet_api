@@ -16,3 +16,4 @@ app.use('/adocoes', adocaoRouter);
 app.use('/prioridades', prioridadeRouter);
 app.use('/ocorrencias', ocorrenciaRouter);
 app.use('/auth', authRouter); 
+app.use('/doacoes', doacaoRouter);
