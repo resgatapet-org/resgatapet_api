@@ -9,7 +9,7 @@ export interface AnimalFilterDTO extends PaginationParams {
     sortOrder?: 'asc' | 'desc'; 
 }
 
-// // atributos necessários para criar um Animal no banco sem o id_animal e o data que é gerada automaticamente
+// atributos necessários para criar um Animal no banco sem o id_animal e o data que é gerada automaticamente
 export type AnimalInputForDB = {
     nome: string;
     especie: string;

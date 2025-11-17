@@ -47,26 +47,29 @@ export class AdocaoController {
             const { animal_id, usuario_id, ong_id, status } = req.body;
 
             // Validações explícitas
-            if (!animal_id || isNaN(Number(animal_id))) errorUtils.addError("O ID do animal é obrigatório e deve ser um número.");
+          if (!animal_id || isNaN(Number(animal_id))) errorUtils.addError("O ID do animal é obrigatório e deve ser um número.");
             if (!usuario_id || isNaN(Number(usuario_id))) errorUtils.addError("O ID do usuário é obrigatório e deve ser um número.");
             if (!status) errorUtils.addError("O status da solicitação é obrigatório.");
-
+            
             errorUtils.throwIfHasErrors("Dados de criação inválidos");
 
-            await this.adocaoBusiness.createAdocao({
+           await this.adocaoBusiness.createAdocao({
                 animal_id: Number(animal_id),
                 usuario_id: Number(usuario_id),
-                ong_id,
-                status,
-                data_solicitacao: new Date(),
+                status: status,
             });
 
             res.status(201).send({ message: "Solicitação de adoção registrada com sucesso!" });
         } catch (error: any) {
             if (error.message.includes("Dados de criação inválidos")) {
-                return res.status(400).send({ success: false, message: "Erro de validação", errors: [error.message] });
+                const errorDetails = error.message.split(": ")[1];
+                return res.status(400).send({ success: false, message: "Erro de validação", errors: errorDetails ? errorDetails.split("|").filter((e: string) => e.trim().length > 0) : [error.message] });
             }
-            res.status(400).send({ error: error.message });
+
+            if (error.message.includes("não encontrado") || error.message.includes("Usuário com ID")) {
+                return res.status(400).send({ success: false, message: "Erro de regra de negócio", errors: [error.message] });
+            }
+            res.status(500).send({ error: error.message });
         }
     };
     public updateStatus = async (req: Request, res: Response) => {

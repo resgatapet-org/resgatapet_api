@@ -3,15 +3,8 @@ import { Doacao } from "../types/doacao";
 import { PaginatedResponse } from "../dto/paginationDto";
 import { DoacaoFilterDTO } from "../dto/doacaoFilterDto";
 import { FilterUtilsDoacao } from "../utils/filterUtilsDoacao";
+import { DoacaoInputFromController } from "../dto/doacaoDto";
 
-//tipo de input esperado do controller, sem o id_doacao e data_doacao
-type DoacaoInputFromController = {
-    tipo: string;
-    usuario_id?: number;
-    ong_id: number;
-    valor?: number;
-    descricao?: string;
-};
 
 export class DoacaoBusiness {
     private doacaoData = new DoacaoData();

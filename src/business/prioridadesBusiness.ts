@@ -3,12 +3,8 @@ import { Prioridade } from "../types/prioridades";
 import { PaginatedResponse } from "../dto/paginationDto";
 import { PrioridadeFilterDTO } from "../dto/prioridadeFilterDto";
 import { FilterUtilsPrioridades } from "../utils/filterUtilsPrioridades";
+import { PrioridadeInput } from "../dto/prioridadeDto";
 
-type PrioridadeInput = {
-    animal_id?: number;
-    descricao: string;
-    nivel: string;
-};
 
 export class PrioridadeBusiness {
     private prioridadeData = new PrioridadeData();
@@ -47,7 +43,7 @@ export class PrioridadeBusiness {
 
     public async updatePrioridade(
         id_prioridade: number,
-        input: PrioridadeInput 
+        input: PrioridadeInput
     ): Promise<void> {
         try {
             const prioridade = await this.prioridadeData.getPrioridadeById(id_prioridade);

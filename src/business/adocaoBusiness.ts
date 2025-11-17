@@ -1,10 +1,12 @@
 import { AdocaoData } from "../data/adocaoData";
-import { Adocao } from "../types/adocao";
 import { PaginatedResponse } from "../dto/paginationDto";
 import { AdocaoFilterDTO } from "../dto/adocaoFilterDto";
 import { FilterUtilsAdocao } from "../utils/filterUtilsAdocao";
 import { AnimalData } from "../data/animalData";
 import { UserData } from "../data/usuarioData";
+import { AdocaoInputFromController } from "../dto/adocaoDto";
+import { Adocao } from "../types/adocao";
+
 
 export class AdocaoBusiness {
   private adocaoData = new AdocaoData();
@@ -30,32 +32,37 @@ export class AdocaoBusiness {
     }
   }
 
-  public async createAdocao(input: AdocaoFilterDTO): Promise<void> {
-  try {
-    const { animal_id, usuario_id, status } = input;
+  public async createAdocao(input: AdocaoInputFromController): Promise<void> {
+    try {
+      const { animal_id, usuario_id, status } = input;
 
-    if (!animal_id || !usuario_id || !status) {
-      throw new Error(
-        "Campos obrigatórios ausentes (animal_id, usuario_id, status)."
-      );
-    }
+      if (!animal_id || !usuario_id || !status) {
+        throw new Error(
+          "Campos obrigatórios ausentes (animal_id, usuario_id, status)."
+        );
+      }
 
-    const animalExiste = await this.animalData.getAnimalById(animal_id);
-    if (!animalExiste) {
-      throw new Error(`Animal com ID ${animal_id} não encontrado.`);
-    }
+      const animalExiste = await this.animalData.getAnimalById(animal_id);
+      if (!animalExiste) {
+        throw new Error(`Animal com ID ${animal_id} não encontrado.`);
+      }
 
-    const usuarioExiste = await this.userData.getUserById(usuario_id);
-    if (!usuarioExiste || usuarioExiste.tipo.toUpperCase() !== "COMUM") {
-      throw new Error(
-        `Usuário com ID ${usuario_id} não encontrado ou não é um Usuário Comum.`
-      );
-    }
+      const usuarioExiste = await this.userData.getUserById(usuario_id);
+      if (!usuarioExiste || usuarioExiste.tipo.toUpperCase() !== "COMUM") {
+        throw new Error(
+          `Usuário com ID ${usuario_id} não encontrado ou não é um Usuário Comum.`
+        );
+      }
 
-      input.data_solicitacao = new Date();
-      input.ong_id = animalExiste.ong_id;
+      const novaAdocaoParaDB = {
+        animal_id: animal_id,
+        usuario_id: usuario_id,
+        status: status,
+        data_solicitacao: new Date(),
+        ong_id: animalExiste.ong_id, 
+      };
 
-      await this.adocaoData.createAdocao(input);
+      await this.adocaoData.createAdocao(novaAdocaoParaDB);
     } catch (error: any) {
       throw new Error(error.message);
     }
