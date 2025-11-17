@@ -30,25 +30,27 @@ export class AdocaoBusiness {
     }
   }
 
-  public async createAdocao(input: Omit<Adocao, "id_adocao">): Promise<void> {
-    try {
-      if (!input.animal_id || !input.usuario_id || !input.status) {
-        throw new Error(
-          "Campos obrigatórios ausentes (animal_id, usuario_id, status)."
-        );
-      }
+  public async createAdocao(input: AdocaoFilterDTO): Promise<void> {
+  try {
+    const { animal_id, usuario_id, status } = input;
 
-      const animalExiste = await this.animalData.getAnimalById(input.animal_id);
-      if (!animalExiste) {
-        throw new Error(`Animal com ID ${input.animal_id} não encontrado.`);
-      }
+    if (!animal_id || !usuario_id || !status) {
+      throw new Error(
+        "Campos obrigatórios ausentes (animal_id, usuario_id, status)."
+      );
+    }
 
-      const usuarioExiste = await this.userData.getUserById(input.usuario_id);
-      if (!usuarioExiste || usuarioExiste.tipo.toUpperCase() !== "COMUM") {
-        throw new Error(
-          `Usuário com ID ${input.usuario_id} não encontrado ou não é um Usuário Comum.`
-        );
-      }
+    const animalExiste = await this.animalData.getAnimalById(animal_id);
+    if (!animalExiste) {
+      throw new Error(`Animal com ID ${animal_id} não encontrado.`);
+    }
+
+    const usuarioExiste = await this.userData.getUserById(usuario_id);
+    if (!usuarioExiste || usuarioExiste.tipo.toUpperCase() !== "COMUM") {
+      throw new Error(
+        `Usuário com ID ${usuario_id} não encontrado ou não é um Usuário Comum.`
+      );
+    }
 
       input.data_solicitacao = new Date();
       input.ong_id = animalExiste.ong_id;

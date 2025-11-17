@@ -2,16 +2,7 @@ import connection from "../dbConnection";
 import { Ong } from "../types/ong";
 import { PaginatedResponse } from "../dto/paginationDto";
 import { OngFilterDTO } from "../dto/ongFilterDto";
-import { OngInputDTO, OngUpdateDTO } from "../dto/ongDto";
-
-// atributos necessários para criar uma ONG no banco sem o id_ong
-type OngInputForDB = {
-    nome: string;
-    email: string;
-    endereco: string;
-    telefone: string;
-    usuario_id: number; // chave estrangeira para Usuario 
-}
+import { OngInputDTO, OngUpdateDTO, OngInputForDB } from "../dto/ongDto";
 
 export class OngData {
 

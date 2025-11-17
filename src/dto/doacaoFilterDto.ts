@@ -7,3 +7,12 @@ export interface DoacaoFilterDTO extends PaginationParams {
     sortBy?: 'id_doacao' | 'data_doacao' | 'valor'; 
     sortOrder?: 'asc' | 'desc'; 
 }
+
+export interface DoacaoInputForDB {
+    tipo: string;
+    data_doacao: Date; 
+    usuario_id?: number; 
+    ong_id: number;
+    valor?: number;
+    descricao?: string;
+};

@@ -19,3 +19,10 @@ export interface OcorrenciaInputDTO{
 export interface OcorrenciaUpdateStatusDTO {
     status: string;
 }
+
+export interface OcorrenciaParaBanco {
+    status: string;
+    data_registro: Date;
+    ong_id?: number | null; 
+    animal_id?: number | null;
+}

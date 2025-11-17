@@ -1,5 +1,4 @@
 import connection from "../dbConnection";
-
 import { PaginatedResponse } from "../dto/paginationDto";
 import { AnimalFilterDTO, AnimalInputForDB } from "../dto/animalFilterDto";
 import { Animal } from "../types/animal";

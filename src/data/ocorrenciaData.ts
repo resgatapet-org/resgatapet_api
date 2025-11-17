@@ -2,14 +2,7 @@
 import connection from "../dbConnection";
 import { Ocorrencia } from "../types/ocorrencia";
 import { PaginatedResponse } from "../dto/paginationDto";
-import { OcorrenciaFilterDTO, OcorrenciaInputDTO } from "../dto/ocorrenciaFilterDto";
-
-type OcorrenciaParaBanco = OcorrenciaInputDTO & {
-    status: string;
-    data_registro: Date;
-    ong_id?: number | null; // ONG e Animal são opcionais
-    animal_id?: number | null;
-}
+import { OcorrenciaFilterDTO, OcorrenciaInputDTO, OcorrenciaParaBanco } from "../dto/ocorrenciaFilterDto";
 
 export class OcorrenciaData {
 

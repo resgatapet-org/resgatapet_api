@@ -1,18 +1,7 @@
 import connection from "../dbConnection";
 import { Doacao } from "../types/doacao";
 import { PaginatedResponse } from "../dto/paginationDto";
-import { DoacaoFilterDTO } from "../dto/doacaoFilterDto";
-
-
-//input sem o id_doacao 
-type DoacaoInputForDB = {
-    tipo: string;
-    data_doacao: Date; 
-    usuario_id?: number; // pode ser nulo, caso a pessoa que doe não se identifique
-    ong_id: number;
-    valor?: number;
-    descricao?: string;
-};
+import { DoacaoFilterDTO, DoacaoInputForDB } from "../dto/doacaoFilterDto";
 
 export class DoacaoData {
 

@@ -2,20 +2,7 @@ import connection from "../dbConnection";
 import { User } from "../types/usuario";
 import { PaginatedResponse } from "../dto/paginationDto";
 import { UserFilterDTO } from "../dto/userFilterDto";
-import { UsuarioCreateDTO, UsuarioUpdateDTO } from "../dto/usuarioDto";
-
-// atributos necessários para criar um usuário no banco
-type UserInputForDB = {
-    nome: string;
-    email: string;
-    senha: string; //com hash
-    tipo: string;
-    data_criacao: Date;
-}
-
-type UsuarioInputParaBanco = UsuarioCreateDTO & {
-    data_criacao: Date;
-}
+import { UsuarioCreateDTO, UsuarioUpdateDTO, UsuarioInputForDB, UsuarioInputParaBanco } from "../dto/usuarioDto";
 
 export class UserData {
 
@@ -81,7 +68,7 @@ export class UserData {
         }
     }
 
-    public async createUser(user: UserInputForDB): Promise<number> {
+    public async createUser(user: UsuarioInputForDB): Promise<number> {
         try {
             const [id_usuario] = await connection('Usuario').insert(user, 'id_usuario');
             return id_usuario;
