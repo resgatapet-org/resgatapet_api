@@ -21,6 +21,10 @@ export interface OcorrenciaUpdateStatusDTO {
 }
 
 export interface OcorrenciaParaBanco {
+    descricao: string; 
+    localizacao: string; 
+    foto_url: string; 
+    usuario_id?: number | null; 
     status: string;
     data_registro: Date;
     ong_id?: number | null; 

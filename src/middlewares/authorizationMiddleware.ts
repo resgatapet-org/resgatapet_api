@@ -45,26 +45,4 @@ export class AuthorizationMiddleware {
       }
     };
   }
-
-  static authorizeOngOwner(req: Request, res: Response, next: NextFunction) {
-    try {
-      if (!req.user) {
-        return res.status(401).send({ error: 'Usuário não autenticado' });
-      }
-
-      if (req.user.tipo === 'ADMIN') {
-        return next();
-      }
-
-      if (req.user.tipo === 'ONG') {
-        return next();
-      }
-
-      return res.status(403).send({
-        error: 'Você não tem permissão para gerenciar esta ONG.',
-      });
-    } catch (error: any) {
-      return res.status(500).send({ error: error.message });
-    }
-  }
 }

@@ -128,13 +128,13 @@ export class OngController {
                 errorUtils.addError("O ID do Admin (usuario_id) é obrigatório e deve ser um número.");
             }
             errorUtils.throwIfHasErrors("Dados de atualização inválidos");
-            
-            const updateInput: OngUpdateDTO = { nome, email, endereco, telefone, usuario_id: Number(usuario_id) }; 
+
+            const updateInput: OngUpdateDTO = { nome, email, endereco, telefone, usuario_id: Number(usuario_id) };
 
             await this.ongBusiness.updateOng(
-                idNumber, 
-                updateInput, 
-                authenticatedUserId, 
+                idNumber,
+                updateInput,
+                authenticatedUserId,
                 authenticatedUserType // envia tipo de usuário para o Business
             );
 
@@ -155,7 +155,13 @@ export class OngController {
                     errors: [error.message],
                 });
             }
-
+            if (error.message.includes("permissão para atualizar esta ONG")) {
+                return res.status(403).send({
+                    success: false,
+                    message: error.message,
+                    errors: [error.message],
+                });
+            }
             if (error.message.includes("já registrado")) {
                 return res.status(409).send({
                     success: false,

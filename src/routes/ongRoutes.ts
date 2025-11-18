@@ -1,3 +1,4 @@
+// src/routes/ongRoutes.ts
 import express from 'express'
 import { OngController } from '../controller/ongController';
 import { AuthMiddleware } from '../middlewares/authMiddleware';
@@ -18,7 +19,7 @@ ongRouter.get('/:id', ongController.getById);
 ongRouter.post('/', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('ADMIN'), ongController.create);
 
 // Atualiza uma ONG (Admin ou Admin da ONG)
-ongRouter.put('/:id', AuthMiddleware.authenticate, AuthorizationMiddleware.authorizeOngOwner, ongController.update);
+ongRouter.put('/:id', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('ONG', 'ADMIN'), ongController.update);
 
 // Remove uma ONG (apenas Admin)
 ongRouter.delete('/:id', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('ADMIN'), ongController.delete);
