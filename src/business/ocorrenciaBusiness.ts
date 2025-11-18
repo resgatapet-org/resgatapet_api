@@ -3,14 +3,14 @@ import { Ocorrencia } from "../types/ocorrencia";
 import { PaginatedResponse } from "../dto/paginationDto";
 import { OcorrenciaFilterDTO, OcorrenciaInputDTO, OcorrenciaUpdateStatusDTO } from "../dto/ocorrenciaFilterDto";
 import { FilterUtilsOcorrencia } from "../utils/filterUtilsOcorrencia";
-import { UserData } from "../data/usuarioData"; 
-import { OngData } from "../data/ongData"; 
+import { UserData } from "../data/usuarioData";
+import { OngData } from "../data/ongData";
 
 
 export class OcorrenciaBusiness {
     private ocorrenciaData = new OcorrenciaData();
-    private userData = new UserData(); 
-    private ongData = new OngData(); 
+    private userData = new UserData();
+    private ongData = new OngData();
 
     public async getAllOcorrencias(filter: OcorrenciaFilterDTO): Promise<PaginatedResponse<Ocorrencia>> {
         try {
@@ -46,17 +46,19 @@ export class OcorrenciaBusiness {
             }
 
             const statusInicial = "encontrado";
-            
+
             const ocorrenciaParaDB = {
-                ...input,
-                usuario_id: input.usuario_id || undefined, 
+                descricao: input.descricao,
+                localizacao: input.localizacao,
+                foto_url: input.foto_url,
+                usuario_id: input.usuario_id || undefined,
                 status: statusInicial,
                 data_registro: new Date(),
                 ong_id: undefined,
                 animal_id: undefined
             };
 
-            await this.ocorrenciaData.createOcorrencia(ocorrenciaParaDB as any);
+            await this.ocorrenciaData.createOcorrencia(ocorrenciaParaDB);
         } catch (error: any) {
             throw new Error(error.message);
         }
@@ -74,9 +76,9 @@ export class OcorrenciaBusiness {
             if (!statusPermitidos.includes(status)) {
                 throw new Error("Status de ocorrência inválido.");
             }
-            
+
             let ong_id_para_associar: number | undefined;
-            
+
             // ONG só pode colocar 'em andamento'
             if (status === 'em andamento') {
                 if (userType === 'ONG') {
@@ -87,7 +89,7 @@ export class OcorrenciaBusiness {
                     ong_id_para_associar = ong.id_ong;
                     await this.ocorrenciaData.updateOcorrenciaStatus(id_ocorrencia, status, ong_id_para_associar);
                 } else if (userType === 'ADMIN') {
-                     await this.ocorrenciaData.updateOcorrenciaStatus(id_ocorrencia, status);
+                    await this.ocorrenciaData.updateOcorrenciaStatus(id_ocorrencia, status);
                 } else {
                     throw new Error("Apenas uma conta ONG ou ADMIN pode alterar o status para 'em andamento'.");
                 }

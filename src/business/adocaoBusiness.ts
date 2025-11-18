@@ -59,7 +59,7 @@ export class AdocaoBusiness {
         usuario_id: usuario_id,
         status: status,
         data_solicitacao: new Date(),
-        ong_id: animalExiste.ong_id, 
+        ong_id: animalExiste.ong_id,
       };
 
       await this.adocaoData.createAdocao(novaAdocaoParaDB);
@@ -84,8 +84,11 @@ export class AdocaoBusiness {
 
       if (status === 'aprovado' && adocao.animal_id) {
         const animal = await this.animalData.getAnimalById(adocao.animal_id); //animal só pode ser adotado se não já estar'adotado'
-        if (animal && animal.status !== 'adotado') {
-          await this.animalData.updateAnimal(adocao.animal_id, { status: 'adotado' }); //muda o status do animal para 'adotado' na tabela animal
+
+        if (!animal) {
+          console.warn(`Animal com ID ${adocao.animal_id} referenciado na adoção ${id_adocao} não encontrado na tabela Animal.`);
+        } else if (animal.status !== 'adotado') {
+          await this.animalData.updateAnimal(adocao.animal_id, { status: 'adotado' });
         }
       }
     } catch (error: any) {
