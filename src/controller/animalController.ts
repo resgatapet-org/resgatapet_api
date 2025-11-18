@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { AnimalBusiness } from "../business/animalBusiness";
 import { FilterUtilsAnimal } from '../utils/filterUtilsAnimal';
-import { ErrorUtils } from '../utils/ErrorUtils';
+import { ErrorUtils } from "../utils/ErrorUtils";
 import { ApiResponse } from '../types/ApiResponse';
 import { Animal } from '../types/animal'; 
 
