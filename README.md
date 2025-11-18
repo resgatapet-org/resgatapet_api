@@ -8,9 +8,25 @@ O sistema permite o registro de ocorrências, o acompanhamento do status dos ani
 
 ## ✨ Visão Geral do Projeto
 
+## 🔄 Fluxo Resumido do Funcionamento
+
+Este é o fluxo completo — e simplificado — do funcionamento da plataforma **ResgataPet**, desde o registro de um animal encontrado até a conclusão de uma adoção:
+
+1. **Um usuário comum encontra um animal de rua** e envia uma ocorrência contendo **foto**, **descrição** e **localização**.
+2. **A ONG cadastrada mais próxima é automaticamente notificada**.  
+   ➤ A escolha leva em conta a **geolocalização informada na ocorrência** e os **endereços das ONGs**.
+3. A ONG acessa o chamado e **atualiza o status da ocorrência** (ex.: “em avaliação”, “resgatado”).
+4. Após o resgate, **a ONG converte a ocorrência em um registro oficial de animal** no sistema.
+5. Quando o animal estiver recuperado, **a ONG marca o animal como “disponível para adoção”**.
+6. Um usuário interessado envia uma **solicitação de adoção** pela API.
+7. A ONG **analisa, aprova ou rejeita** a solicitação.
+8. O sistema **mantém o histórico completo** desde a ocorrência inicial até a adoção.
+
+> **Observação:**  
+> Animais reportados via ocorrências **não entram diretamente na tabela de animais** — eles só passam a existir oficialmente quando a ONG confirma o resgate.
+
+
 * **Integrantes**: Gustavo, Joyce, Julia e Sanio
-* **Status do Desenvolvimento**: Configuração do Banco de Dados / Implementação dos Endpoints Básicos
-* **Link do Repositório**: [Inserir link do GitHub aqui]
 
 ### 💻 Stack Técnica
 
