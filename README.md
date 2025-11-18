@@ -1,16 +1,5 @@
 # 🐶 API ResgataPet - Documentação Técnica Completa 🐱
 
-### 🎓 Trabalho Acadêmico e Autoria
-
-Este projeto foi desenvolvido como trabalho em grupo para a disciplina de Desenvolvimento de API da [Nome da Faculdade ou Universidade].
-
-| 👨‍💻 Integrante | 
-| :-----------: | 
-| Joyce         | 
-| Gustavo       | 
-| Julia         | 
-| Sanio         | 
-
 ## 1. Introdução
 
 A **API ResgataPet** é uma plataforma RESTful desenvolvida para gerenciar e centralizar informações sobre a causa animal, facilitando o registro de ocorrências, adoções e doações entre a comunidade e ONGs parceiras.
@@ -538,6 +527,19 @@ curl -X GET 'http://localhost:3003/animais?page=1&limit=2&sortBy=nome&sortOrder=
 
 ---
 
-## 11. Licença
+## 11. Integrantes do Projeto
+
+Este projeto foi desenvolvido como trabalho acadêmico da disciplina **Desenvolvimento de API** da **Faculdade FAMINAS**.
+
+### Equipe de Desenvolvimento
+
+- **Joyce**
+- **Julia**
+- **Sanio**
+- **Gustavo**
+
+---
+
+## 12. Licença
 
 Este projeto está licenciado sob a **Licença MIT**.
