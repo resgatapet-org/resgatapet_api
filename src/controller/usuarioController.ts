@@ -55,6 +55,15 @@ export class UserController {
                 errorUtils.addError("O tipo de usuário deve ser COMUM, ONG ou ADMIN.");
             }
 
+            if (!email) errorUtils.addError("O email é obrigatório.");
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (email && !emailRegex.test(email)) {
+                errorUtils.addError("O formato do email é inválido.");
+            }
+
+            errorUtils.throwIfHasErrors("Dados de criação inválidos");
+
             errorUtils.throwIfHasErrors("Dados de criação inválidos");
 
 
