@@ -9,7 +9,7 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
 const BCRYPT_ROUNDS = Number(process.env.BCRYPT_ROUNDS) || 10;
 
 export interface TokenPayload {
-    userId: number;
+    userId?: number;
     email: string;
     tipo: string;
 }

@@ -6,7 +6,7 @@ export interface LoginInput {
 export interface AuthResponse {
     token: string;
     user: {
-        id: number;
+        id?: number;
         nome: string;
         email: string;
         tipo: string;
