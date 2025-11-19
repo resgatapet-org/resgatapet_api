@@ -14,7 +14,7 @@ const mockInput: DoacaoInputFromController = {
   ong_id: 10,
   usuario_id: 20,
   valor: 50,
-  descricao: "Doação de teste",
+  descricao: "Doacao de teste",
 };
 
 describe("Testando DoacaoBusiness (Ajustado para o TYPE REAL)", () => {
@@ -33,8 +33,8 @@ describe("Testando DoacaoBusiness (Ajustado para o TYPE REAL)", () => {
     FilterUtilsDoacao.applyDefaults = jest.fn().mockReturnValue(mockInput);
   });
 
-  describe("Cenários de Sucesso", () => {
-    test("Deve criar uma doação corretamente com base no type real", async () => {
+  describe("Cenarios de Sucesso", () => {
+    test("Deve criar uma doacao corretamente com base no type real", async () => {
       const result = await doacaoBusiness.createDoacao(mockInput);
 
       expect(doacaoDataMock.createDoacao).toHaveBeenCalledTimes(1);
@@ -53,12 +53,12 @@ describe("Testando DoacaoBusiness (Ajustado para o TYPE REAL)", () => {
         ong_id: 10,
         usuario_id: 20,
         valor: 50,
-        descricao: "Doação de teste",
+        descricao: "Doacao de teste",
         data_doacao: MOCK_DATE,
       });
     });
 
-    test("Deve permitir valor e descricao ausentes, já que são opcionais no TYPE", async () => {
+    test("Deve permitir valor e descricao ausentes, ja que sao opcionais no TYPE", async () => {
       const inputSemOpcionais: DoacaoInputFromController = {
         tipo: "PIX",
         ong_id: 10,
@@ -79,8 +79,8 @@ describe("Testando DoacaoBusiness (Ajustado para o TYPE REAL)", () => {
     });
   });
 
-  describe("Validações", () => {
-    test("Deve lançar erro se faltar tipo", async () => {
+  describe("Validacoes", () => {
+    test("Deve lancar erro se faltar tipo", async () => {
       expect.assertions(1);
 
       const invalid: any = { ...mockInput, tipo: undefined };
@@ -92,7 +92,7 @@ describe("Testando DoacaoBusiness (Ajustado para o TYPE REAL)", () => {
       }
     });
 
-    test("Deve lançar erro se faltar ong_id", async () => {
+    test("Deve lancar erro se faltar ong_id", async () => {
       expect.assertions(1);
 
       const invalid: any = { ...mockInput, ong_id: undefined };
@@ -104,7 +104,7 @@ describe("Testando DoacaoBusiness (Ajustado para o TYPE REAL)", () => {
       }
     });
 
-    test("Deve lançar erro se faltar usuario_id", async () => {
+    test("Deve lancar erro se faltar usuario_id", async () => {
       expect.assertions(1);
 
       const invalid: any = { ...mockInput, usuario_id: undefined };
@@ -155,7 +155,7 @@ describe("Testando DoacaoBusiness (Ajustado para o TYPE REAL)", () => {
   });
 
   describe("getDoacaoById", () => {
-    test("Deve retornar uma doação válida", async () => {
+    test("Deve retornar uma doacao valida", async () => {
       const mockDoacao: Doacao = {
         id_doacao: 10,
         tipo: "CARTAO",
@@ -171,7 +171,7 @@ describe("Testando DoacaoBusiness (Ajustado para o TYPE REAL)", () => {
       expect(result).toEqual(mockDoacao);
     });
 
-    test("Deve retornar undefined se não encontrar", async () => {
+    test("Deve retornar undefined se nao encontrar", async () => {
       doacaoDataMock.getDoacaoById.mockResolvedValue(undefined);
 
       const result = await doacaoBusiness.getDoacaoById(999);
