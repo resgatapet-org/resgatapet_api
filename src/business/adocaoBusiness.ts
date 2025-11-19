@@ -7,7 +7,6 @@ import { UserData } from "../data/usuarioData";
 import { AdocaoInputFromController } from "../dto/adocaoDto";
 import { Adocao } from "../types/adocao";
 
-
 export class AdocaoBusiness {
   private adocaoData = new AdocaoData();
   private animalData = new AnimalData();
@@ -38,19 +37,19 @@ export class AdocaoBusiness {
 
       if (!animal_id || !usuario_id || !status) {
         throw new Error(
-          "Campos obrigatórios ausentes (animal_id, usuario_id, status)."
+          "Campos obrigatorios ausentes (animal_id, usuario_id, status)."
         );
       }
 
       const animalExiste = await this.animalData.getAnimalById(animal_id);
       if (!animalExiste) {
-        throw new Error(`Animal com ID ${animal_id} não encontrado.`);
+        throw new Error(`Animal com ID ${animal_id} nao encontrado.`);
       }
 
       const usuarioExiste = await this.userData.getUserById(usuario_id);
       if (!usuarioExiste || usuarioExiste.tipo.toUpperCase() !== "COMUM") {
         throw new Error(
-          `Usuário com ID ${usuario_id} não encontrado ou não é um Usuário Comum.`
+          `Usuario com ID ${usuario_id} nao encontrado ou nao e um Usuario Comum.`
         );
       }
 
@@ -72,21 +71,21 @@ export class AdocaoBusiness {
     try {
       const adocao = await this.adocaoData.getAdocaoById(id_adocao);
       if (!adocao) {
-        throw new Error("Solicitação de adoção não encontrada.");
+        throw new Error("Solicitacao de adocao nao encontrada.");
       }
 
-      const statusPermitidos = ["aprovado", "rejeitado", "em análise"];
+      const statusPermitidos = ["aprovado", "rejeitado", "em analise"];
       if (!statusPermitidos.includes(status)) {
-        throw new Error("Status de adoção inválido.");
+        throw new Error("Status de adocao invalido.");
       }
 
       await this.adocaoData.updateAdocaoStatus(id_adocao, status);
 
       if (status === 'aprovado' && adocao.animal_id) {
-        const animal = await this.animalData.getAnimalById(adocao.animal_id); //animal só pode ser adotado se não já estar'adotado'
+        const animal = await this.animalData.getAnimalById(adocao.animal_id);
 
         if (!animal) {
-          console.warn(`Animal com ID ${adocao.animal_id} referenciado na adoção ${id_adocao} não encontrado na tabela Animal.`);
+          console.warn(`Animal com ID ${adocao.animal_id} referenciado na adocao ${id_adocao} nao encontrado na tabela Animal.`);
         } else if (animal.status !== 'adotado') {
           await this.animalData.updateAnimal(adocao.animal_id, { status: 'adotado' });
         }
@@ -100,7 +99,7 @@ export class AdocaoBusiness {
     try {
       const adocao = await this.adocaoData.getAdocaoById(id_adocao);
       if (!adocao) {
-        throw new Error("Solicitação de adoção não encontrada.");
+        throw new Error("Solicitacao de adocao nao encontrada.");
       }
 
       await this.adocaoData.deleteAdocao(id_adocao);
