@@ -5,9 +5,13 @@ import { OngInputDTO, OngUpdateDTO } from '../src/dto/ongDto';
 import { OngFilterDTO } from '../src/dto/ongFilterDto';
 import { Ong } from '../src/types/ong';
 
+// 1. Mocks
+// Usamos jest.mock para simular a camada de Dados e de Utilitários.
+// Isso garante que estamos testando APENAS a lógica do Business (teste unitário).
 jest.mock('../src/data/ongData');
 jest.mock('../src/utils/filterUtilsOng');
 
+// Mocks de Dados para reuso
 const mockOngInput: OngInputDTO = {
     nome: "ONG Teste",
     email: "ong@teste.com",
@@ -40,12 +44,14 @@ describe("Testando a classe OngBusiness", () => {
 
     beforeEach(() => {
         ongBusiness = new OngBusiness();
+        // Acesso às instâncias mockadas (Injeção de Dependências)
         ongDataMock = (ongBusiness as any).ongData;
         filterUtilsMock = FilterUtilsOng as any;
 
         jest.clearAllMocks();
     });
 
+    // 2. Testes de getAllOngs (com Paginação)
     describe("Testando getAllOngs", () => {
         test("Deve retornar lista de ONGs com filtros aplicados", async () => {
             const mockFilter: OngFilterDTO = {
@@ -55,34 +61,45 @@ describe("Testando a classe OngBusiness", () => {
 
             const mockCompleteFilter = {
                 ...mockFilter,
-                offset: 0,
+                nome: "", 
+                cidade: "",
+                sortBy: 'id_ong',
+                sortOrder: 'asc'
             };
 
+            // CORREÇÃO: O mock agora segue o contrato PaginatedResponse<Ong>
+            // Ele precisa da propriedade 'pageInfo' que contém as informações da paginação.
             const mockResponse = {
                 data: [mockOng],
-                total: 1,
-                page: 1,
-                limit: 10,
-                totalPages: 1,
+                pageInfo: { // <--- CORREÇÃO AQUI!
+                    total: 1,
+                    limit: 10,
+                    page: 1,
+                    totalPages: 1,
+                },
             };
 
+            // Mocks de comportamento:
             filterUtilsMock.applyOngDefaults.mockReturnValue(mockCompleteFilter as any);
-            ongDataMock.getAllOngs.mockResolvedValue(mockResponse);
+            ongDataMock.getAllOngs.mockResolvedValue(mockResponse as any);
 
             const result = await ongBusiness.getAllOngs(mockFilter);
 
+            // Verificações de mock (Mocks com Jest)
             expect(filterUtilsMock.applyOngDefaults).toHaveBeenCalledWith(mockFilter);
             expect(ongDataMock.getAllOngs).toHaveBeenCalledWith(mockCompleteFilter);
             expect(result).toEqual(mockResponse);
         });
 
+        // Testando erros assíncronos com try/catch e expect.assertions
         test("Deve lançar erro quando getAllOngs falhar", async () => {
-            expect.assertions(1);
+            expect.assertions(1); // Indica que 1 expect DEVE ser rodado [cite: 263]
 
             const mockFilter: OngFilterDTO = { page: 1, limit: 10 };
             const errorMessage = "Erro ao buscar ONGs";
 
             filterUtilsMock.applyOngDefaults.mockReturnValue(mockFilter as any);
+            // Simula a falha (Promise rejeitada)
             ongDataMock.getAllOngs.mockRejectedValue(new Error(errorMessage));
 
             try {
@@ -93,7 +110,9 @@ describe("Testando a classe OngBusiness", () => {
         });
     });
 
+    // 3. Testes de getOngById
     describe("Testando getOngById", () => {
+        // ... (Testes getOngById mantidos, pois estavam corretos) ...
         test("Deve retornar uma ONG pelo ID", async () => {
             ongDataMock.getOngById.mockResolvedValue(mockOng);
 
@@ -126,6 +145,7 @@ describe("Testando a classe OngBusiness", () => {
         });
     });
 
+    // 4. Testes de createOng
     describe("Testando createOng", () => {
         beforeEach(() => {
             ongDataMock.getOngByEmail.mockResolvedValue(undefined);
@@ -143,10 +163,12 @@ describe("Testando a classe OngBusiness", () => {
             });
         });
 
+        // Testes de campos obrigatórios
         test("Deve lançar erro quando falta o campo 'nome'", async () => {
             expect.assertions(1);
 
             const invalidInput: any = {
+                // nome: ausente
                 email: "ong@teste.com",
                 endereco: "Rua Teste, 123",
                 usuario_id: 1,
@@ -164,6 +186,7 @@ describe("Testando a classe OngBusiness", () => {
 
             const invalidInput: any = {
                 nome: "ONG Teste",
+                // email: ausente
                 endereco: "Rua Teste, 123",
                 usuario_id: 1,
             };
@@ -181,6 +204,7 @@ describe("Testando a classe OngBusiness", () => {
             const invalidInput: any = {
                 nome: "ONG Teste",
                 email: "ong@teste.com",
+                // endereco: ausente
                 usuario_id: 1,
             };
 
@@ -198,6 +222,7 @@ describe("Testando a classe OngBusiness", () => {
                 nome: "ONG Teste",
                 email: "ong@teste.com",
                 endereco: "Rua Teste, 123",
+                // usuario_id: ausente
             };
 
             try {
@@ -210,6 +235,7 @@ describe("Testando a classe OngBusiness", () => {
         test("Deve lançar erro quando email já está cadastrado", async () => {
             expect.assertions(1);
 
+            // Simula que a ONG já existe
             ongDataMock.getOngByEmail.mockResolvedValue(mockOng);
 
             try {
@@ -233,6 +259,7 @@ describe("Testando a classe OngBusiness", () => {
         });
     });
 
+    // 5. Testes de updateOng (com Autorização)
     describe("Testando updateOng", () => {
         beforeEach(() => {
             ongDataMock.getOngById.mockResolvedValue(mockOng);
@@ -241,6 +268,7 @@ describe("Testando a classe OngBusiness", () => {
         });
 
         test("Deve atualizar uma ONG com sucesso quando usuário é ADMIN", async () => {
+            // userId: 2 (diferente do dono), userType: 'ADMIN'
             await ongBusiness.updateOng(1, mockOngUpdate, 2, 'ADMIN');
 
             expect(ongDataMock.getOngById).toHaveBeenCalledWith(1);
@@ -249,6 +277,7 @@ describe("Testando a classe OngBusiness", () => {
         });
 
         test("Deve atualizar uma ONG com sucesso quando usuário é o dono", async () => {
+            // userId: 1 (igual ao dono: mockOng.usuario_id), userType: 'COMUM' (tipo do token, mas a lógica prioriza o ID)
             await ongBusiness.updateOng(1, mockOngUpdate, 1, 'COMUM');
 
             expect(ongDataMock.getOngById).toHaveBeenCalledWith(1);
@@ -260,8 +289,10 @@ describe("Testando a classe OngBusiness", () => {
             expect.assertions(1);
 
             try {
+                // userId: 999 (não é ADMIN e não é o dono)
                 await ongBusiness.updateOng(1, mockOngUpdate, 999, 'COMUM');
             } catch (error: any) {
+                // CORREÇÃO: Usando template literal (backticks `) corretamente
                 expect(error.message).toEqual(`Você não tem permissão para atualizar esta ONG. Apenas o Administrador do sistema ou o Admin vinculado (usuario_id: ${mockOng.usuario_id}) pode fazer isso.`);
             }
         });
@@ -281,7 +312,8 @@ describe("Testando a classe OngBusiness", () => {
         test("Deve lançar erro quando email já está cadastrado para outra ONG", async () => {
             expect.assertions(1);
 
-            const outraOng = { ...mockOng, id_ong: 2 };
+            // Outra ONG, com ID diferente, mas mesmo email do update
+            const outraOng = { ...mockOng, id_ong: 2, email: mockOngUpdate.email };
             ongDataMock.getOngByEmail.mockResolvedValue(outraOng);
 
             try {
@@ -292,12 +324,14 @@ describe("Testando a classe OngBusiness", () => {
         });
 
         test("Deve permitir atualizar com o mesmo email da própria ONG", async () => {
+            // A ONG atualizada tem o mesmo email que a ONG original (mockOng)
             const updateComMesmoEmail: OngUpdateDTO = {
                 ...mockOngUpdate,
                 email: mockOng.email,
             };
 
-            ongDataMock.getOngByEmail.mockResolvedValue(mockOng);
+            // O mock retorna a PRÓPRIA ONG ao buscar por email (ou seja, não há conflito)
+            ongDataMock.getOngByEmail.mockResolvedValue(mockOng); 
 
             await ongBusiness.updateOng(1, updateComMesmoEmail, 1, 'ADMIN');
 
@@ -318,6 +352,7 @@ describe("Testando a classe OngBusiness", () => {
         });
     });
 
+    // 6. Testes de deleteOng
     describe("Testando deleteOng", () => {
         test("Deve deletar uma ONG com sucesso", async () => {
             ongDataMock.getOngById.mockResolvedValue(mockOng);

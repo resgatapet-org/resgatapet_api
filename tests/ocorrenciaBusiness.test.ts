@@ -1,127 +1,230 @@
-import { OcorrenciaData } from "../data/ocorrenciaData";
-import { Ocorrencia } from "../types/ocorrencia";
-import { PaginatedResponse } from "../dto/paginationDto";
-import { OcorrenciaFilterDTO, OcorrenciaInputDTO, OcorrenciaUpdateStatusDTO } from "../dto/ocorrenciaFilterDto";
-import { FilterUtilsOcorrencia } from "../utils/filterUtilsOcorrencia";
-import { UserData } from "../data/usuarioData";
-import { OngData } from "../data/ongData";
+import { OcorrenciaBusiness } from '../src/business/ocorrenciaBusiness';
+import { OcorrenciaData } from '../src/data/ocorrenciaData';
+import { UserData } from '../src/data/usuarioData';
+import { OngData } from '../src/data/ongData';
+import { FilterUtilsOcorrencia } from '../src/utils/filterUtilsOcorrencia';
+import { OcorrenciaInputDTO, OcorrenciaUpdateStatusDTO } from '../src/dto/ocorrenciaFilterDto';
+import { PaginatedResponse } from '../src/dto/paginationDto';
+import { Ocorrencia } from '../src/types/ocorrencia';
+import { User } from '../src/types/usuario';
+import { Ong } from '../src/types/ong';
 
-export class OcorrenciaBusiness {
-    private ocorrenciaData = new OcorrenciaData();
-    private userData = new UserData();
-    private ongData = new OngData();
 
-    public async getAllOcorrencias(filter: OcorrenciaFilterDTO): Promise<PaginatedResponse<Ocorrencia>> {
-        try {
-            const completeFilter = FilterUtilsOcorrencia.applyOcorrenciaDefaults(filter);
-            const ocorrencias = await this.ocorrenciaData.getAllOcorrencias(completeFilter);
-            return ocorrencias;
-        } catch (error: any) {
-            throw new Error(error.message);
-        }
-    }
+jest.mock('../src/data/ocorrenciaData');
+jest.mock('../src/data/usuarioData');
+jest.mock('../src/data/ongData');
+jest.mock('../src/utils/filterUtilsOcorrencia');
 
-    public async getOcorrenciaById(id_ocorrencia: number): Promise<Ocorrencia | undefined> {
-        try {
-            const ocorrencia = await this.ocorrenciaData.getOcorrenciaById(id_ocorrencia);
-            return ocorrencia;
-        } catch (error: any) {
-            throw new Error(error.message);
-        }
-    }
 
-    public async createOcorrencia(input: OcorrenciaInputDTO): Promise<Ocorrencia> {
-        try {
-           
-            if (!input.descricao || !input.localizacao || !input.foto_url) {
-                throw new Error("Campos obrigatórios ausentes: descricao, localizacao e foto_url.");
-            }
+const mockDataRegistro = new Date('2025-11-18T10:00:00.000Z');
 
-            if (input.usuario_id) {
-                const userExists = await this.userData.getUserById(input.usuario_id);
-                if (!userExists) {
-                    throw new Error("Usuário não encontrado.");
-                }
-                if (userExists.tipo.toUpperCase() !== "COMUM") {
-                    throw new Error("Apenas usuários do tipo COMUM podem criar ocorrências.");
-                }
-            }
+const mockOcorrenciaInput: OcorrenciaInputDTO = {
+    descricao: "Animal abandonado na rua X",
+    localizacao: "Rua Principal, 100",
+    foto_url: "http://foto.com/animal.jpg",
+    usuario_id: 3, 
+};
 
-            const ocorrenciaParaDB = {
-                descricao: input.descricao,
-                localizacao: input.localizacao,
-                foto_url: input.foto_url,
-                usuario_id: input.usuario_id || undefined,
-                status: "encontrado",
-                data_registro: new Date(),
-                ong_id: undefined,
-                animal_id: undefined
+const mockOcorrencia: Ocorrencia = {
+    id_ocorrencia: 1,
+    descricao: mockOcorrenciaInput.descricao,
+    localizacao: mockOcorrenciaInput.localizacao,
+    foto_url: mockOcorrenciaInput.foto_url,
+    status: "encontrado",
+    usuario_id: mockOcorrenciaInput.usuario_id!,
+    data_registro: mockDataRegistro,
+    ong_id: undefined,
+};
+
+const mockUserComum: User = {
+    id_usuario: 3,
+    nome: "João Cidadão",
+    email: "joao@email.com",
+    senha: "hash",
+    tipo: "COMUM",
+    data_criacao: mockDataRegistro,
+};
+
+const mockUserOng: User = {
+    id_usuario: 2,
+    nome: "ONG User",
+    email: "ong@email.com",
+    senha: "hash",
+    tipo: "ONG",
+    data_criacao: mockDataRegistro,
+};
+
+const mockOng: Ong = {
+    id_ong: 5,
+    nome: "Abrigo Feliz",
+    email: "contato@abrigofeliz.com",
+    endereco: "Rua ONG, 456",
+    telefone: "12345678",
+    usuario_id: 2, 
+};
+
+describe("Testando a classe OcorrenciaBusiness", () => {
+    let ocorrenciaBusiness: OcorrenciaBusiness;
+    let ocorrenciaDataMock: jest.Mocked<OcorrenciaData>;
+    let userDataMock: jest.Mocked<UserData>;
+    let ongDataMock: jest.Mocked<OngData>;
+    let filterUtilsMock: jest.Mocked<typeof FilterUtilsOcorrencia>;
+
+    beforeEach(() => {
+        ocorrenciaBusiness = new OcorrenciaBusiness();
+        ocorrenciaDataMock = (ocorrenciaBusiness as any).ocorrenciaData;
+        userDataMock = (ocorrenciaBusiness as any).userData;
+        ongDataMock = (ocorrenciaBusiness as any).ongData;
+        filterUtilsMock = FilterUtilsOcorrencia as any;
+
+        jest.clearAllMocks();
+    });
+
+    describe("Testando getAllOcorrencias", () => {
+        test("Deve retornar lista de ocorrências com filtros aplicados", async () => {
+            const mockFilter = { page: 1, limit: 10 };
+            const mockCompleteFilter = { 
+                ...mockFilter, 
+                status: "", 
+                localizacao: "", 
+                usuario_id: 0, 
+                ong_id: 0, 
+                sortBy: 'id_ocorrencia', 
+                sortOrder: 'desc' 
+            };
+            
+        
+            const mockResponse: PaginatedResponse<Ocorrencia> = {
+                data: [mockOcorrencia],
+                pageInfo: {
+                    total: 1,
+                    limit: 10,
+                    page: 1,
+                    totalPages: 1,
+                },
             };
 
-            const ocorrenciaId = await this.ocorrenciaData.createOcorrencia(ocorrenciaParaDB);
+            filterUtilsMock.applyOcorrenciaDefaults.mockReturnValue(mockCompleteFilter as any);
+            ocorrenciaDataMock.getAllOcorrencias.mockResolvedValue(mockResponse);
+
+            const result = await ocorrenciaBusiness.getAllOcorrencias(mockFilter);
+
+            expect(result).toEqual(mockResponse);
+        });
+
+        test("Deve lançar erro quando a camada de dados falhar", async () => {
+            expect.assertions(1);
+            ocorrenciaDataMock.getAllOcorrencias.mockRejectedValue(new Error("Erro no banco de dados"));
+            try {
+                await ocorrenciaBusiness.getAllOcorrencias({});
+            } catch (error: any) {
+                expect(error.message).toEqual("Erro no banco de dados");
+            }
+        });
+    });
+
+    
+    describe("Testando createOcorrencia", () => {
+        beforeEach(() => {
+            userDataMock.getUserById.mockResolvedValue(mockUserComum as any);
+            (ocorrenciaDataMock.createOcorrencia as jest.Mock).mockResolvedValue(1); 
+        });
+
+        test("Deve criar uma ocorrência com usuário autenticado (COMUM)", async () => {
+            const result = await ocorrenciaBusiness.createOcorrencia(mockOcorrenciaInput);
             
-            return { 
-                ...ocorrenciaParaDB, 
-                id_ocorrencia: ocorrenciaId 
-            } as Ocorrencia;
-        } catch (error: any) {
-            throw new Error(error.message);
-        }
-    }
-
-    public async updateOcorrenciaStatus(
-        id_ocorrencia: number, 
-        statusInput: OcorrenciaUpdateStatusDTO, 
-        userId?: number, 
-        userType?: string
-    ): Promise<void> {
-        try {
-            const { status } = statusInput;
-
-            // Verifica se a ocorrência existe
-            const ocorrencia = await this.ocorrenciaData.getOcorrenciaById(id_ocorrencia);
-            if (!ocorrencia) {
-                throw new Error("Ocorrência não encontrada.");
+            expect(ocorrenciaDataMock.createOcorrencia).toHaveBeenCalledWith(expect.objectContaining({
+                status: "encontrado",
+            }));
+            
+            expect(result).toEqual(expect.objectContaining({
+                id_ocorrencia: 1,
+                status: "encontrado",
+            }));
+        });
+        
+        test("Deve criar uma ocorrência sem usuário (anônimo)", async () => {
+            const inputAnonimo: OcorrenciaInputDTO = { ...mockOcorrenciaInput, usuario_id: undefined };
+            
+            await ocorrenciaBusiness.createOcorrencia(inputAnonimo);
+            expect(userDataMock.getUserById).not.toHaveBeenCalled(); 
+        });
+        
+        test("Deve lançar erro se campos obrigatórios estiverem ausentes", async () => {
+            expect.assertions(1);
+            const invalidInput: any = { localizacao: "Local", foto_url: "foto" };
+            try {
+                await ocorrenciaBusiness.createOcorrencia(invalidInput);
+            } catch (error: any) {
+                expect(error.message).toEqual("Campos obrigatórios ausentes: descricao, localizacao e foto_url.");
             }
+        });
 
-            // Validação de status permitidos
-            const statusPermitidos = ["resolvido", "em andamento", "cancelado", "encontrado"];
-            if (!statusPermitidos.includes(status)) {
-                throw new Error("Status de ocorrência inválido.");
+        test("Deve lançar erro se usuário autenticado não for COMUM", async () => {
+            expect.assertions(1);
+            userDataMock.getUserById.mockResolvedValue({ ...mockUserComum, tipo: "ADMIN" } as any);
+            try {
+                await ocorrenciaBusiness.createOcorrencia(mockOcorrenciaInput);
+            } catch (error: any) {
+                expect(error.message).toEqual("Usuário ID inválido ou não é um Usuário Comum.");
             }
+        });
+    });
 
-            // Regras de negócio para status "em andamento"
-            if (status === "em andamento") {
-                if (userType === "ONG") {
-                    const ong = await this.ongData.getOngByUserId(userId!);
-                    if (!ong) {
-                        throw new Error("Sua conta não está associada a nenhuma ONG cadastrada.");
-                    }
-                    await this.ocorrenciaData.updateOcorrenciaStatus(id_ocorrencia, status, ong.id_ong);
-                } else if (userType === "ADMIN") {
-                    await this.ocorrenciaData.updateOcorrenciaStatus(id_ocorrencia, status);
-                } else {
-                    throw new Error("Apenas uma conta ONG ou ADMIN pode alterar o status para 'em andamento'.");
-                }
-            } else {
-                // Para outros status (resolvido, cancelado, encontrado)
-                await this.ocorrenciaData.updateOcorrenciaStatus(id_ocorrencia, status);
+    
+    describe("Testando updateOcorrenciaStatus", () => {
+        const id = 1;
+        
+        beforeEach(() => {
+            ocorrenciaDataMock.getOcorrenciaById.mockResolvedValue(mockOcorrencia);
+            ocorrenciaDataMock.updateOcorrenciaStatus.mockResolvedValue();
+            ongDataMock.getOngByUserId.mockResolvedValue(mockOng);
+        });
+
+        test("Deve atualizar para 'em andamento' se for ADMIN", async () => {
+            const statusInput: OcorrenciaUpdateStatusDTO = { status: "em andamento" };
+            await ocorrenciaBusiness.updateOcorrenciaStatus(id, statusInput, 1, 'ADMIN');
+            expect(ocorrenciaDataMock.updateOcorrenciaStatus).toHaveBeenCalledWith(id, "em andamento");
+        });
+
+        test("Deve atualizar para 'em andamento' e associar ong_id se for ONG", async () => {
+            const statusInput: OcorrenciaUpdateStatusDTO = { status: "em andamento" };
+            const userId = mockUserOng.id_usuario;
+
+            await ocorrenciaBusiness.updateOcorrenciaStatus(id, statusInput, userId, 'ONG');
+
+            expect(ocorrenciaDataMock.updateOcorrenciaStatus).toHaveBeenCalledWith(id, "em andamento", mockOng.id_ong);
+        });
+
+        test("Deve lançar erro se ONG não estiver associada", async () => {
+            expect.assertions(1);
+            const statusInput: OcorrenciaUpdateStatusDTO = { status: "em andamento" };
+            ongDataMock.getOngByUserId.mockResolvedValue(undefined); 
+
+            try {
+                await ocorrenciaBusiness.updateOcorrenciaStatus(id, statusInput, 999, 'ONG');
+            } catch (error: any) {
+                expect(error.message).toEqual("Sua conta não está associada a nenhuma ONG cadastrada.");
             }
-        } catch (error: any) {
-            throw new Error(error.message);
-        }
-    }
+        });
+    });
 
-    public async deleteOcorrencia(id_ocorrencia: number): Promise<void> {
-        try {
-            const ocorrencia = await this.ocorrenciaData.getOcorrenciaById(id_ocorrencia);
-            if (!ocorrencia) {
-                throw new Error("Ocorrência não encontrada.");
+   
+    describe("Testando deleteOcorrencia", () => {
+        test("Deve deletar uma ocorrência com sucesso", async () => {
+            ocorrenciaDataMock.getOcorrenciaById.mockResolvedValue(mockOcorrencia);
+            await ocorrenciaBusiness.deleteOcorrencia(1);
+            expect(ocorrenciaDataMock.deleteOcorrencia).toHaveBeenCalledWith(1);
+        });
+
+        test("Deve lançar erro quando ocorrência não existir", async () => {
+            expect.assertions(1);
+            ocorrenciaDataMock.getOcorrenciaById.mockResolvedValue(undefined);
+            try {
+                await ocorrenciaBusiness.deleteOcorrencia(999);
+            } catch (error: any) {
+                expect(error.message).toEqual("Ocorrência não encontrada.");
             }
-
-            await this.ocorrenciaData.deleteOcorrencia(id_ocorrencia);
-        } catch (error: any) {
-            throw new Error(error.message);
-        }
-    }
-}
+        });
+    });
+});
