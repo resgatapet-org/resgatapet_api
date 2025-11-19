@@ -1,11 +1,13 @@
 import { UserBusiness } from '../src/business/usuarioBusiness';
 import { UserData } from '../src/data/usuarioData';
 import { AuthUtils } from '../src/utils/authUtils';
+import { ErrorUtils } from '../src/utils/ErrorUtils';
 import { UsuarioCreateDTO } from '../src/dto/usuarioDto';
 import { User } from '../src/types/usuario';
 
 jest.mock('../src/data/usuarioData');
 jest.mock('../src/utils/authUtils');
+jest.mock('../src/utils/ErrorUtils');
 
 const MOCK_HASHED_PASSWORD = "hashed_password_mock";
 
@@ -20,11 +22,14 @@ describe("Testando UserBusiness.createUser", () => {
     let userBusiness: UserBusiness;
     let userDataMock: jest.Mocked<UserData>;
     let authUtilsMock: jest.Mocked<typeof AuthUtils>;
+    let errorUtilsMock: jest.Mocked<ErrorUtils>;
 
     beforeEach(() => {
         userBusiness = new UserBusiness();
         userDataMock = (userBusiness as any).userData;
         authUtilsMock = AuthUtils as any;
+        // Acessamos a instância mockada de ErrorUtils que é criada dentro do construtor
+        errorUtilsMock = (ErrorUtils as jest.Mock).mock.instances[0];
 
         jest.clearAllMocks();
 
@@ -239,7 +244,7 @@ describe("Testando UserBusiness.createUser", () => {
         });
 
         test("Deve lançar erro para email inválido", async () => {
-            expect.assertions(1);
+            expect.assertions(2);
 
             const invalidInput: UsuarioCreateDTO = {
                 ...mockInput,
@@ -249,7 +254,8 @@ describe("Testando UserBusiness.createUser", () => {
             try {
                 await userBusiness.createUser(invalidInput);
             } catch (error: any) {
-                expect(error.message).toContain("email");
+                expect(errorUtilsMock.addError).toHaveBeenCalledWith("Formato de email inválido.");
+                expect(errorUtilsMock.throwIfHasErrors).toHaveBeenCalled();
             }
         });
 
@@ -269,7 +275,7 @@ describe("Testando UserBusiness.createUser", () => {
         });
 
         test("Deve lançar erro para tipo inválido", async () => {
-            expect.assertions(1);
+            expect.assertions(2);
 
             const invalidInput: any = {
                 ...mockInput,
@@ -279,7 +285,8 @@ describe("Testando UserBusiness.createUser", () => {
             try {
                 await userBusiness.createUser(invalidInput);
             } catch (error: any) {
-                expect(error.message).toContain("tipo");
+                expect(errorUtilsMock.addError).toHaveBeenCalledWith("O tipo de usuário deve ser 'ADMIN', 'ONG' ou 'COMUM'.");
+                expect(errorUtilsMock.throwIfHasErrors).toHaveBeenCalled();
             }
         });
     });
