@@ -1,9 +1,9 @@
-import { UserBusiness } from '../src/business/usuarioBusiness';
-import { UserData } from '../src/data/usuarioData';
-import { AuthUtils } from '../src/utils/authUtils';
-import { ErrorUtils } from '../src/utils/ErrorUtils';
-import { UsuarioCreateDTO } from '../src/dto/usuarioDto';
-import { User } from '../src/types/usuario';
+import { UserBusiness } from '../../src/business/usuarioBusiness';
+import { UserData } from '../../src/data/usuarioData';
+import { AuthUtils } from '../../src/utils/authUtils';
+import { ErrorUtils } from '../../src/utils/ErrorUtils';
+import { UsuarioCreateDTO } from '../../src/dto/usuarioDto';
+import { User } from '../../src/types/usuario';
 
 jest.mock('../src/data/usuarioData');
 jest.mock('../src/utils/authUtils');
@@ -28,7 +28,6 @@ describe("Testando UserBusiness.createUser", () => {
         userBusiness = new UserBusiness();
         userDataMock = (userBusiness as any).userData;
         authUtilsMock = AuthUtils as any;
-        // Acessamos a instância mockada de ErrorUtils que é criada dentro do construtor
         errorUtilsMock = (ErrorUtils as jest.Mock).mock.instances[0];
 
         jest.clearAllMocks();
@@ -38,9 +37,8 @@ describe("Testando UserBusiness.createUser", () => {
         userDataMock.createUser.mockResolvedValue(5);
     });
 
-    describe("Cenários de Sucesso", () => {
-        
-        test("Deve criar um usuário com sucesso e retornar o usuário criado", async () => {
+    describe("Cenarios de Sucesso", () => {
+        test("Deve criar um usuario com sucesso e retornar o usuario criado", async () => {
             const result = await userBusiness.createUser(mockInput);
 
             expect(authUtilsMock.hashPassword).toHaveBeenCalledWith(mockInput.senha);
@@ -66,7 +64,7 @@ describe("Testando UserBusiness.createUser", () => {
             expect(userDataMock.getUserByEmail).toHaveBeenCalledTimes(1);
         });
 
-        test("Deve chamar todos os métodos na ordem correta", async () => {
+        test("Deve chamar todos os metodos na ordem correta", async () => {
             await userBusiness.createUser(mockInput);
 
             expect(userDataMock.getUserByEmail).toHaveBeenCalled();
@@ -81,9 +79,8 @@ describe("Testando UserBusiness.createUser", () => {
         });
     });
 
-    describe("Validação de Email Duplicado", () => {
-        
-        test("Deve lançar erro quando email já está cadastrado", async () => {
+    describe("Validacao de Email Duplicado", () => {
+        test("Deve lancar erro quando email ja esta cadastrado", async () => {
             expect.assertions(2);
 
             const existingUser: User = {
@@ -100,13 +97,13 @@ describe("Testando UserBusiness.createUser", () => {
             try {
                 await userBusiness.createUser(mockInput);
             } catch (error: any) {
-                expect(error.message).toEqual("Email já cadastrado.");
+                expect(error.message).toEqual("Email ja cadastrado.");
 
                 expect(userDataMock.createUser).not.toHaveBeenCalled();
             }
         });
 
-        test("Não deve fazer hash da senha se email já existe", async () => {
+        test("Nao deve fazer hash da senha se email ja existe", async () => {
             expect.assertions(2);
 
             const existingUser: User = {
@@ -123,15 +120,14 @@ describe("Testando UserBusiness.createUser", () => {
             try {
                 await userBusiness.createUser(mockInput);
             } catch (error: any) {
-                expect(error.message).toEqual("Email já cadastrado.");
+                expect(error.message).toEqual("Email ja cadastrado.");
                 expect(authUtilsMock.hashPassword).not.toHaveBeenCalled();
             }
         });
     });
 
-    describe("Validação de Campos Obrigatórios", () => {
-        
-        test("Deve lançar erro quando faltar o campo 'tipo'", async () => {
+    describe("Validacao de Campos Obrigatorios", () => {
+        test("Deve lancar erro quando faltar o campo 'tipo'", async () => {
             expect.assertions(1);
 
             const invalidInput: any = {
@@ -144,12 +140,12 @@ describe("Testando UserBusiness.createUser", () => {
                 await userBusiness.createUser(invalidInput);
             } catch (error: any) {
                 expect(error.message).toEqual(
-                    "Campos obrigatórios ausentes: nome, email, senha e tipo."
+                    "Campos obrigatorios ausentes: nome, email, senha e tipo."
                 );
             }
         });
 
-        test("Deve lançar erro quando faltar o campo 'nome'", async () => {
+        test("Deve lancar erro quando faltar o campo 'nome'", async () => {
             expect.assertions(1);
 
             const invalidInput: any = {
@@ -165,7 +161,7 @@ describe("Testando UserBusiness.createUser", () => {
             }
         });
 
-        test("Deve lançar erro quando faltar o campo 'email'", async () => {
+        test("Deve lancar erro quando faltar o campo 'email'", async () => {
             expect.assertions(1);
 
             const invalidInput: any = {
@@ -181,7 +177,7 @@ describe("Testando UserBusiness.createUser", () => {
             }
         });
 
-        test("Deve lançar erro quando faltar o campo 'senha'", async () => {
+        test("Deve lancar erro quando faltar o campo 'senha'", async () => {
             expect.assertions(1);
 
             const invalidInput: any = {
@@ -197,7 +193,7 @@ describe("Testando UserBusiness.createUser", () => {
             }
         });
 
-        test("Deve lançar erro quando faltarem múltiplos campos", async () => {
+        test("Deve lancar erro quando faltarem multiplos campos", async () => {
             expect.assertions(1);
 
             const invalidInput: any = {
@@ -208,12 +204,12 @@ describe("Testando UserBusiness.createUser", () => {
                 await userBusiness.createUser(invalidInput);
             } catch (error: any) {
                 expect(error.message).toEqual(
-                    "Campos obrigatórios ausentes: nome, email, senha e tipo."
+                    "Campos obrigatorios ausentes: nome, email, senha e tipo."
                 );
             }
         });
 
-        test("Deve lançar erro quando input for objeto vazio", async () => {
+        test("Deve lancar erro quando input for objeto vazio", async () => {
             expect.assertions(1);
 
             const invalidInput: any = {};
@@ -221,14 +217,13 @@ describe("Testando UserBusiness.createUser", () => {
             try {
                 await userBusiness.createUser(invalidInput);
             } catch (error: any) {
-                expect(error.message).toContain("Campos obrigatórios ausentes");
+                expect(error.message).toContain("Campos obrigatorios ausentes");
             }
         });
     });
 
-    describe("Validação de Formato de Dados", () => {
-        
-        test("Deve lançar erro para nome vazio", async () => {
+    describe("Validacao de Formato de Dados", () => {
+        test("Deve lancar erro para nome vazio", async () => {
             expect.assertions(1);
 
             const invalidInput: UsuarioCreateDTO = {
@@ -243,7 +238,7 @@ describe("Testando UserBusiness.createUser", () => {
             }
         });
 
-        test("Deve lançar erro para email inválido", async () => {
+        test("Deve lancar erro para email invalido", async () => {
             expect.assertions(2);
 
             const invalidInput: UsuarioCreateDTO = {
@@ -254,12 +249,12 @@ describe("Testando UserBusiness.createUser", () => {
             try {
                 await userBusiness.createUser(invalidInput);
             } catch (error: any) {
-                expect(errorUtilsMock.addError).toHaveBeenCalledWith("Formato de email inválido.");
+                expect(errorUtilsMock.addError).toHaveBeenCalledWith("Formato de email invalido.");
                 expect(errorUtilsMock.throwIfHasErrors).toHaveBeenCalled();
             }
         });
 
-        test("Deve lançar erro para senha muito curta", async () => {
+        test("Deve lancar erro para senha muito curta", async () => {
             expect.assertions(1);
 
             const invalidInput: UsuarioCreateDTO = {
@@ -274,7 +269,7 @@ describe("Testando UserBusiness.createUser", () => {
             }
         });
 
-        test("Deve lançar erro para tipo inválido", async () => {
+        test("Deve lancar erro para tipo invalido", async () => {
             expect.assertions(2);
 
             const invalidInput: any = {
@@ -285,14 +280,13 @@ describe("Testando UserBusiness.createUser", () => {
             try {
                 await userBusiness.createUser(invalidInput);
             } catch (error: any) {
-                expect(errorUtilsMock.addError).toHaveBeenCalledWith("O tipo de usuário deve ser 'ADMIN', 'ONG' ou 'COMUM'.");
+                expect(errorUtilsMock.addError).toHaveBeenCalledWith("O tipo de usuario deve ser 'ADMIN', 'ONG' ou 'COMUM'.");
                 expect(errorUtilsMock.throwIfHasErrors).toHaveBeenCalled();
             }
         });
     });
 
     describe("Comportamento dos Mocks", () => {
-        
         test("Deve usar senha mockada no resultado", async () => {
             const customHash = "custom_hash_123";
             authUtilsMock.hashPassword.mockResolvedValue(customHash);

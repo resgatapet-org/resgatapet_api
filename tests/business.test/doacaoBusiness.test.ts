@@ -1,8 +1,8 @@
-import { DoacaoBusiness } from "../src/business/doacaoBusiness";
-import { DoacaoData } from "../src/data/doacaoData";
-import { FilterUtilsDoacao } from "../src/utils/filterUtilsDoacao";
-import { DoacaoInputFromController } from "../src/dto/doacaoDto";
-import { Doacao } from "../src/types/doacao";
+import { DoacaoBusiness } from "../../src/business/doacaoBusiness";
+import { DoacaoData } from "../../src/data/doacaoData";
+import { FilterUtilsDoacao } from "../../src/utils/filterUtilsDoacao";
+import { DoacaoInputFromController } from "../../src/dto/doacaoDto";
+import { Doacao } from "../../src/types/doacao";
 
 jest.mock("../src/data/doacaoData");
 jest.mock("../src/utils/filterUtilsDoacao");

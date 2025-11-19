@@ -1,10 +1,10 @@
-import { AnimalBusiness } from '../src/business/animalBusiness';
-import { AnimalData } from '../src/data/animalData';
-import { PrioridadeBusiness } from '../src/business/prioridadesBusiness';
-import { FilterUtilsAnimal } from '../src/utils/filterUtilsAnimal';
-import { AnimalFilterDTO } from '../src/dto/animalFilterDto';
-import { PaginatedResponse } from '../src/dto/paginationDto';
-import { Animal } from '../src/types/animal';
+import { AnimalBusiness } from '../../src/business/animalBusiness';
+import { AnimalData } from '../../src/data/animalData';
+import { PrioridadeBusiness } from '../../src/business/prioridadesBusiness';
+import { FilterUtilsAnimal } from '../../src/utils/filterUtilsAnimal';
+import { AnimalFilterDTO } from '../../src/dto/animalFilterDto';
+import { PaginatedResponse } from '../../src/dto/paginationDto';
+import { Animal } from '../../src/types/animal';
 
 jest.mock('../src/data/animalData');
 jest.mock('../src/business/prioridadesBusiness');

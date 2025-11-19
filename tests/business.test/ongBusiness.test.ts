@@ -1,9 +1,9 @@
-import { OngBusiness } from '../src/business/ongBusiness';
-import { OngData } from '../src/data/ongData';
-import { FilterUtilsOng } from '../src/utils/filterUtilsOng';
-import { OngInputDTO, OngUpdateDTO } from '../src/dto/ongDto';
-import { OngFilterDTO } from '../src/dto/ongFilterDto';
-import { Ong } from '../src/types/ong';
+import { OngBusiness } from '../../src/business/ongBusiness';
+import { OngData } from '../../src/data/ongData';
+import { FilterUtilsOng } from '../../src/utils/filterUtilsOng';
+import { OngInputDTO, OngUpdateDTO } from '../../src/dto/ongDto';
+import { OngFilterDTO } from '../../src/dto/ongFilterDto';
+import { Ong } from '../../src/types/ong';
 
 jest.mock('../src/data/ongData');
 jest.mock('../src/utils/filterUtilsOng');
