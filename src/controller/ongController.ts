@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { OngBusiness } from "../business/ongBusiness";
 import { FilterUtilsOng } from "../utils/filterUtilsOng";
-import { ErrorUtils } from "../utils/ErrorUtils";
-import { ApiResponse } from "../types/ApiResponse";
+import { ErrorUtils } from "../utils/errorUtils";
+import { ApiResponse } from "../types/apiResponse";
 import { Ong } from "../types/ong";
 import { OngUpdateDTO } from "../dto/ongDto";
 

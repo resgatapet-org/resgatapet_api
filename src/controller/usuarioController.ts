@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { UserBusiness } from "../business/usuarioBusiness";
 import { FilterUtilsUsuario } from "../utils/filterUtilsUsuario";
-import { ErrorUtils } from "../utils/ErrorUtils";
-import { ApiResponse } from "../types/ApiResponse";
+import { ErrorUtils } from "../utils/errorUtils";
+import { ApiResponse } from "../types/apiResponse";
 import { User } from "../types/usuario";
 
 export class UserController {

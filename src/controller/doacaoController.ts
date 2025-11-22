@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { DoacaoBusiness } from "../business/doacaoBusiness";
 import { FilterUtilsDoacao } from '../utils/filterUtilsDoacao'; 
-import { ErrorUtils } from '../utils/ErrorUtils';
-import { ApiResponse } from '../types/ApiResponse';
+import { ErrorUtils } from '../utils/errorUtils';
+import { ApiResponse } from '../types/apiResponse';
 import { Doacao } from '../types/doacao';
 
 export class DoacaoController {

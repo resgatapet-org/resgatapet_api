@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { OcorrenciaBusiness } from "../business/ocorrenciaBusiness";
 import { FilterUtilsOcorrencia } from '../utils/filterUtilsOcorrencia';
-import { ErrorUtils } from '../utils/ErrorUtils';
-import { ApiResponse } from '../types/ApiResponse';
+import { ErrorUtils } from '../utils/errorUtils';
+import { ApiResponse } from '../types/apiResponse';
 import { Ocorrencia } from '../types/ocorrencia';
 import { OcorrenciaInputDTO, OcorrenciaUpdateStatusDTO } from "../dto/ocorrenciaFilterDto";
 

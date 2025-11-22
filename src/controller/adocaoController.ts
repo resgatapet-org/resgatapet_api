@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { AdocaoBusiness } from "../business/adocaoBusiness";
 import { FilterUtilsAdocao } from '../utils/filterUtilsAdocao';
-import { ErrorUtils } from '../utils/ErrorUtils';
-import { ApiResponse } from '../types/ApiResponse';
+import { ErrorUtils } from '../utils/errorUtils';
+import { ApiResponse } from '../types/apiResponse';
 
 export class AdocaoController {
     private adocaoBusiness = new AdocaoBusiness();

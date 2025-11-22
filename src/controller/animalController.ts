@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { AnimalBusiness } from "../business/animalBusiness";
 import { FilterUtilsAnimal } from '../utils/filterUtilsAnimal';
-import { ErrorUtils } from "../utils/ErrorUtils";
-import { ApiResponse } from '../types/ApiResponse';
+import { ErrorUtils } from "../utils/errorUtils";
+import { ApiResponse } from '../types/apiResponse';
 import { Animal } from '../types/animal'; 
 
 export class AnimalController {

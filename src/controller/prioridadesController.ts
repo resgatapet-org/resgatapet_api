@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { PrioridadeBusiness } from "../business/prioridadesBusiness";
 import { FilterUtilsPrioridades } from '../utils/filterUtilsPrioridades'; 
-import { ErrorUtils } from '../utils/ErrorUtils';
-import { ApiResponse } from '../types/ApiResponse';
+import { ErrorUtils } from '../utils/errorUtils';
+import { ApiResponse } from '../types/apiResponse';
 import { Prioridade } from '../types/prioridades';
 
 export class PrioridadeController {
