@@ -9,40 +9,40 @@ export class DoacaoData {
         try {
             const { tipo, ong_id, usuario_id, page, limit, sortBy, sortOrder } = filter;
 
-            let query = connection('doacao').select(); 
+            let query = connection("doacao").select();
 
             if (tipo) {
-                query = query.where('tipo', 'like', `%${tipo}%`); 
+                query = query.where("tipo", "like", `%${tipo}%`);
             }
             if (ong_id && ong_id > 0) {
-                query = query.where('ong_id', ong_id); 
+                query = query.where("ong_id", ong_id);
             }
             if (usuario_id && usuario_id > 0) {
-                query = query.where('usuario_id', usuario_id); 
+                query = query.where("usuario_id", usuario_id);
             }
 
             const countQuery = query.clone();
-            const [{ total }] = await countQuery.count('* as total'); 
+            const [{ total }] = await countQuery.count("* as total");
 
             query = query.orderBy(sortBy, sortOrder);
 
-            const offset = (page - 1) * limit; 
+            const offset = (page - 1) * limit;
             query = query.limit(limit).offset(offset);
 
             const data = await query;
 
-            const totalPages = Math.ceil(Number(total) / limit); 
+            const totalPages = Math.ceil(Number(total) / limit);
             const pagination: PaginatedResponse<Doacao> = {
                 pageInfo: {
                     total: Number(total),
-                    limit: limit,
-                    page: page,
-                    totalPages: totalPages
+                    limit,
+                    page,
+                    totalPages
                 },
                 data: data as Doacao[]
             };
 
-            return pagination; 
+            return pagination;
         } catch (error: any) {
             throw new Error(error.sqlMessage || error.message);
         }
@@ -50,7 +50,7 @@ export class DoacaoData {
 
     public async getDoacaoById(id_doacao: number): Promise<Doacao | undefined> {
         try {
-            const doacao = await connection('doacao').where({ id_doacao }).first();
+            const doacao = await connection("doacao").where({ id_doacao }).first();
             return doacao as Doacao | undefined;
         } catch (error: any) {
             throw new Error(error.sqlMessage || error.message);
@@ -59,8 +59,24 @@ export class DoacaoData {
 
     public async createDoacao(doacao: DoacaoInputForDB): Promise<number> {
         try {
-            const [id_doacao] = await connection('doacao').insert(doacao);
+            const [id_doacao] = await connection("doacao").insert(doacao);
             return id_doacao;
+        } catch (error: any) {
+            throw new Error(error.sqlMessage || error.message);
+        }
+    }
+
+    public async updateDoacao(id_doacao: number, data: Partial<Doacao>): Promise<void> {
+        try {
+            await connection("doacao").where({ id_doacao }).update(data);
+        } catch (error: any) {
+            throw new Error(error.sqlMessage || error.message);
+        }
+    }
+
+    public async deleteDoacao(id_doacao: number): Promise<void> {
+        try {
+            await connection("doacao").where({ id_doacao }).del();
         } catch (error: any) {
             throw new Error(error.sqlMessage || error.message);
         }
